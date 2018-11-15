@@ -1,2 +1,1 @@
 networkx==1.11
-backports.lzma

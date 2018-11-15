@@ -20,5 +20,5 @@ bin/vc_validate --help
 
 ## Validate Vertex Cover
 ```bash
-bin/vc_validate -g graphfile.gr -d vertexcoverfile.vc
+bin/vc_validate -g graphfile.gr -vc vertexcoverfile.vc
 ```
