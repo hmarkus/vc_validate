@@ -1,0 +1,5 @@
+c This file describes for a graph with 5 vertices
+c a vertex cover consisting of 2 vertices 
+s vc 5 2
+2
+4
