@@ -29,9 +29,16 @@ import sys
 # this just seems really really ugly
 src_path = os.path.abspath(os.path.realpath(inspect.getfile(inspect.currentframe())))
 src_path = os.path.realpath(os.path.join(src_path, '../..'))
-
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
+#print src_path
+src_path = os.path.realpath(os.path.join(src_path, './lib/htd_validate'))
+
+#print src_path
+if src_path not in sys.path:
+    sys.path.insert(0, src_path)
+
+#print sys.path
 
 import vc_validate
 import htd_validate
@@ -65,8 +72,6 @@ def is_valid_file(parser, arg):
 def parse_args():
     parser = argparse.ArgumentParser(description='%(prog)s')
     parser.add_argument('--version', action='version', version='%(prog)s {version}'.format(version=__version__))
-    parser.add_argument('-ff', '--fischl-format', dest='fischl_format', action='store_true', default=False,
-                        help='Use the famous Fischl format.')
     required = parser.add_argument_group('required arguments')
     required.add_argument('-g', '--hypergraph', dest='graph_filename', action='store', required=True,
                           type=lambda x: is_valid_file(parser, x),
@@ -81,9 +86,8 @@ def main():
     args = parse_args()
     graph_filename = args.graph_filename
     vertexcover_filename = args.vertexcover_filename
-    fischl_format = args.fischl_format
-    HG = getattr(htd_validate.utils, Validator.graph_type()).from_file(graph_filename, fischl_format=fischl_format)
-    VC = VertexCover.from_file(vertexcover_filename)
+    HG = htd_validate.utils.Graph.from_file(graph_filename)
+    VC = vc_validate.vertexcover.VertexCover.from_file(vertexcover_filename, strict=True)
     ret = VC.validate(HG)
     exit(not ret)
 
