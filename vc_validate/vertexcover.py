@@ -20,6 +20,7 @@ from __future__ import print_function
 
 import logging
 import os
+import sys
 
 import networkx as nx
 import htd_validate
@@ -74,7 +75,7 @@ class VertexCover:
                     elif line[0] == 's' and line[1] == cls._problem_string:
                         if header_seen:
                             log_critical('Duplicate header.')
-                            exit(2)
+                            sys.exit(2)
                         try:
                             header['num_vertices'] = int(line[2])
                             header['num_vertices_vc'] = int(line[3])
@@ -83,7 +84,7 @@ class VertexCover:
                         except ValueError as e:
                             logging.error(e)
                             log_critical('Too many or too few arguments in header.')
-                            exit(2)
+                            sys.exit(2)
                         header_seen = True
                     else:
                         if cls._reader(vc, line):
@@ -91,12 +92,12 @@ class VertexCover:
                         else:
                             if strict and not header_seen:
                                 log_critical('Vertex before header.')
-                                exit(2)
+                                sys.exit(2)
                             u = int(line[0])
                             if u > header['num_vertices'] or u < 1:
                                 log_critical("Vertex label %s out of bounds (expected max %s vertices)." % (
                                 u, header['num_vertices']))
-                                exit(2)
+                                sys.exit(2)
                             vc._vc.add(u)
                             vertex_seen = True
             except ValueError as e:
@@ -109,14 +110,14 @@ class VertexCover:
                 for line in traceback.format_exc().split('\n'):
                     logging.critical(line)
                 logging.critical('Exiting...')
-                exit(143)
+                sys.exit(143)
             if not header_seen:
                 logging.critical('Missing header. Exiting...')
-                exit(2)
+                sys.exit(2)
             if (len(vc._vc) < header['num_vertices_vc'] or len(vc._vc) > header['num_vertices_vc']) and strict:
                 logging.warning(
                     'Number of vertices differ. Was %s expected %s.\n' % (len(vc._vc), header['num_vertices_vc']))
-                exit(2)
+                sys.exit(2)
         return vc
         # return clazz._from_file(filename, strict=strict)
 
