@@ -12,6 +12,8 @@ using namespace std;
 const int INSTANCE_READ_MODE = 1;
 const int SOLUTION_READ_MODE = 2;
 
+bool DO_CHECK_CONSTRAINT;
+
 void checkInputConstraint(bool validConstraint, int lineNumber, string failMsg) {
   if (!validConstraint) {
     cerr << "Instance Error (" << lineNumber << "): " << failMsg << endl;
@@ -20,7 +22,7 @@ void checkInputConstraint(bool validConstraint, int lineNumber, string failMsg) 
 }
 
 void checkSolutionConstraint(bool validConstraint, string failMsg) {
-  if (!validConstraint) {
+  if (DO_CHECK_CONSTRAINT && !validConstraint) {
     #ifdef VERBOSE
       cout << 0 << "|" << failMsg << endl;
     #else
@@ -97,7 +99,9 @@ class Solution {
       return vertexCover;
     }
 
-    void readFromStream(ifstream &is) {
+    void readFromStream(ifstream &is, bool doCheckConstraint) {
+      DO_CHECK_CONSTRAINT = doCheckConstraint;
+
       coverSize = -1;
       numVertex = -1;
       vertexCover.clear();
@@ -207,6 +211,8 @@ class ProblemInstance {
     }
 
     int validate(Solution solution) {
+      DO_CHECK_CONSTRAINT = true;
+      
       vector<int> vertexCover = solution.getVertexCover();
       set<int> cover(vertexCover.begin(), vertexCover.end());
 
@@ -256,11 +262,11 @@ int main(int argc, char **argv) {
   }
 
   problemInstance.readFromStream(instanceInputStream);
-  userSolution.readFromStream(userOutputStream);
+  userSolution.readFromStream(userOutputStream, true);
 
   if (argc >= 4) {
     ifstream instanceOutputStream(argv[3]);
-    judgeSolution.readFromStream(instanceOutputStream);
+    judgeSolution.readFromStream(instanceOutputStream, false);
   }
 
   int valid = problemInstance.validate(userSolution);
