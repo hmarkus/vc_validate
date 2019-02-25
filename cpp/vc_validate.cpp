@@ -5,9 +5,12 @@
 #include <string>
 #include <fstream>
 #include <set>
+#include <iomanip>
 using namespace std;
 
 //////////// HELPER //////////////////
+
+const int TIMEOUT_TIME = 1800;
 
 const int INSTANCE_READ_MODE = 1;
 const int SOLUTION_READ_MODE = 2;
@@ -21,14 +24,18 @@ void checkInputConstraint(bool validConstraint, int lineNumber, string failMsg) 
   }
 }
 
+void giveVerdict(double score, string msg) {
+  cout << fixed << setprecision(8) << score << "|" << msg << endl;
+  exit(0);
+}
+
 void checkSolutionConstraint(bool validConstraint, string failMsg) {
   if (DO_CHECK_CONSTRAINT && !validConstraint) {
     #ifdef VERBOSE
-      cout << 0 << "|" << failMsg << endl;
+      giveVerdict(-TIMEOUT_TIME * 10, failMsg);
     #else
-      cout << 0 << "|Wrong Answer" << endl;
+      giveVerdict(-TIMEOUT_TIME * 10, "Wrong Answer");
     #endif
-    exit(0);
   }
 }
 
@@ -246,13 +253,24 @@ class ProblemInstance {
 
 ProblemInstance problemInstance;
 Solution judgeSolution, userSolution;
+double userTime;
 
 int main(int argc, char **argv) {
   if (argc < 3) {
     printf("Usage: %s instance_input solution_output [instance_output]\n", argv[0]);
     return 0;
   }
-  
+
+  if (argc >= 5) {
+    sscanf(argv[4], "%lf", &userTime);
+    // since OPTIL give use 100 * time in seconds..
+    userTime /= 100.0;
+
+    // if (userTime > TIMEOUT_TIME) {
+    //   giveVerdict(-TIMEOUT_TIME * 2, "Time Limit Exceeded");
+    // }
+  }
+
   ifstream instanceInputStream(argv[1]);
   ifstream userOutputStream(argv[2]);
 
@@ -270,13 +288,14 @@ int main(int argc, char **argv) {
   }
 
   int valid = problemInstance.validate(userSolution);
-
-  int result = valid;
   if (argc >= 4) {
-    result &= (userSolution.getCoverSize() <= judgeSolution.getCoverSize());
+    valid &= (userSolution.getCoverSize() <= judgeSolution.getCoverSize());
   }
 
-  cout << result << "|SUCCESS\n";
+  DO_CHECK_CONSTRAINT = true;
+  checkSolutionConstraint(valid, "Reported vertex cover is not optimal");
+
+  giveVerdict(2 * TIMEOUT_TIME - userTime, "SUCCESS");
 
   return 0;
 }
