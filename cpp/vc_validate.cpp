@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
   DO_CHECK_CONSTRAINT = true;
   checkSolutionConstraint(valid, "Reported vertex cover is not optimal");
 
-  giveVerdict(2 * TIMEOUT_TIME - userTime, "SUCCESS");
+  giveVerdict(userTime, "SUCCESS");
 
   return 0;
 }
