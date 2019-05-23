@@ -22,3 +22,9 @@ bin/vc_validate --help
 ```bash
 bin/vc_validate -g graphfile.gr -vc vertexcoverfile.vc
 ```
+
+## Compile with PyInstaller
+```bash
+pyinstaller -p $PWD:$PWD/lib/htd_validate --clean --onefile bin/vc_validate
+```
+Executable will be in `dist`
