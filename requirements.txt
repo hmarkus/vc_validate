@@ -1,2 +1,2 @@
 networkx==1.11
-PyInstaller==3.4
+PyInstaller==3.6
